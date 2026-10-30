@@ -37,13 +37,27 @@ jobs:
           # Setup GitHub in known_hosts for git operations
           ssh-keyscan -H github.com >> /root/.ssh/known_hosts 2>/dev/null || true
 
-          # Deploy
+          # Create deployment directory if it doesn't exist
+          mkdir -p /www/wwwroot/wpblog
           cd /www/wwwroot/wpblog
-          git checkout -- package-lock.json
-          git pull origin main
+
+          # Clone if not a git repo, otherwise pull
+          if [ ! -d .git ]; then
+            echo "Initializing git repository..."
+            git clone https://github.com/DarkestEver/ai-whitepaper-blogging.git .
+          else
+            echo "Pulling latest changes..."
+            git checkout -- package-lock.json || true
+            git pull origin main
+          fi
+
+          # Install and build
           npm install
           npm run build
+
+          # Restart application
           pkill -f "npm run start" || true
+          sleep 2
           npm run start > app.log 2>&1 &
           echo "Deployment completed successfully"
           EOF
