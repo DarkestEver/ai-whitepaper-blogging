@@ -1,0 +1,49 @@
+name: Deploy to aaPanel Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          cat << 'EOFKEY' > ~/.ssh/id_rsa
+          ${{ secrets.SSH_PRIVATE_KEY }}
+          EOFKEY
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p 2222 -H 38.242.236.254 >> ~/.ssh/known_hosts
+
+      - name: Test SSH connection
+        run: |
+          ssh -o BatchMode=yes -o ConnectTimeout=15 -p 2222 root@38.242.236.254 "echo SSH connection successful"
+
+      - name: Deploy to server
+        run: |
+          ssh -o BatchMode=yes -p 2222 root@38.242.236.254 << 'EOF'
+          set -e
+          # Setup GitHub in known_hosts for git operations
+          ssh-keyscan -H github.com >> /root/.ssh/known_hosts 2>/dev/null || true
+
+          # Deploy
+          cd /www/wwwroot/wpblog
+          git checkout -- package-lock.json
+          git pull origin main
+          npm install
+          npm run build
+          pkill -f "npm run start" || true
+          npm run start > app.log 2>&1 &
+          echo "Deployment completed successfully"
+          EOF
