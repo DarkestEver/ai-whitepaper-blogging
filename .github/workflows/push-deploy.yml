@@ -41,23 +41,9 @@ jobs:
           mkdir -p /www/wwwroot/wpblog
           cd /www/wwwroot/wpblog
 
-          # Fix git ownership issues
-          git config --global --add safe.directory /www/wwwroot/wpblog || true
-
-          # Clone if not a git repo, otherwise pull
-          if [ ! -d .git ]; then
-            echo "Initializing git repository..."
-            git clone https://github.com/DarkestEver/ai-whitepaper-blogging.git .
-          else
-            echo "Pulling latest changes..."
-            git config --global --add safe.directory /www/wwwroot/wpblog
-            git checkout -- package-lock.json || true
-            git pull origin main
-          fi
-
-          # Fix permissions after git operations
-          chown -R root:root /www/wwwroot/wpblog || true
-          chmod -R 755 /www/wwwroot/wpblog || true
+          # Remove .git to avoid ownership issues, then fresh clone
+          rm -rf .git package-lock.json
+          git clone https://github.com/DarkestEver/ai-whitepaper-blogging.git . 2>&1 | grep -v "already exists"
 
           # Install and build
           npm install
