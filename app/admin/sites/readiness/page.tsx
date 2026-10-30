@@ -1,0 +1,7 @@
+import Link from "next/link";
+import { AdminShell, StatusPill } from "@/components/admin-shell";
+import { requireAdmin } from "@/lib/auth";
+import { getSite } from "@/lib/db";
+import { getSiteReadiness } from "@/lib/site-readiness";
+export const metadata = { title: "Production readiness", robots: { index: false, follow: false } };
+export default async function ReadinessPage() { await requireAdmin(); const site = await getSite(); const checks = getSiteReadiness(site); const ready = checks.every((check) => check.ready); return <AdminShell><div className="admin-page-heading"><div><nav className="admin-breadcrumb" aria-label="Breadcrumb"><Link href={`/admin/sites/${site.id}`}>Domain management</Link><span aria-hidden="true">/</span><span>Production readiness</span></nav><h1>Launch <em>readiness.</em></h1><p>These checks must be evidenced before enabling public indexing or reader downloads.</p></div><StatusPill status={ready ? "ready" : "blocked"} /></div><section className="admin-panel admin-recent"><div className="admin-panel-heading"><div><p className="eyebrow">{site.name}</p><h2>{ready ? "Ready for owner review" : "Blocked"}</h2></div><Link className="button button-dark" href="/admin/sites">Update settings</Link></div><div className="audit-list">{checks.map((check) => <div className="audit-item" key={check.name}><StatusPill status={check.ready ? "ready" : "blocked"} /><strong>{check.name}</strong><span>{check.detail}</span></div>)}</div></section></AdminShell>; }
