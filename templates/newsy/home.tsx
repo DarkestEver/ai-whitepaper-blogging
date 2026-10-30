@@ -45,11 +45,12 @@ function getCategoryEmoji(category: string): string {
 
 export function NewsynHome({ site, papers, featuredPapers, categories, query, topic, pagination }: HomePageData) {
   const isHomePage = topic === "All topics";
+  const navCategories = categories;
 
   // Build hierarchical menu
   const categoryHierarchy = buildHierarchicalMenu(
-    papers.map((p) => ({ category: p.category, parentCategory: p.parentCategory })),
-    site.industry || "technology"
+    papers.map((p) => ({ category: p.category, parentCategory: p.category })),
+    "technology"
   );
   const navParents = Object.keys(categoryHierarchy).slice(0, 6);
 

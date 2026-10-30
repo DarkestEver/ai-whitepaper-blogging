@@ -19,11 +19,12 @@ function pageHref(query: string, topic: string, page: number): string {
 
 export function NewsmagHome({ site, papers, featuredPapers, categories, query, topic, pagination }: HomePageData) {
   const isHomePage = topic === "All topics";
+  const navCategories = categories;
 
   // Build hierarchical menu
   const categoryHierarchy = buildHierarchicalMenu(
-    papers.map((p) => ({ category: p.category, parentCategory: p.parentCategory })),
-    site.industry || "technology"
+    papers.map((p) => ({ category: p.category, parentCategory: p.category })),
+    "technology"
   );
   const navParents = Object.keys(categoryHierarchy).slice(0, 7);
 

@@ -23,10 +23,11 @@ export function PennNewsHome({ site, papers, featuredPapers, categories, query, 
 
   // Build hierarchical menu
   const categoryHierarchy = buildHierarchicalMenu(
-    papers.map((p) => ({ category: p.category, parentCategory: p.parentCategory })),
-    site.industry || "technology"
+    papers.map((p) => ({ category: p.category, parentCategory: p.category })),
+    "technology"
   );
   const navParents = Object.keys(categoryHierarchy).slice(0, 6);
+  const navCategories = categories;
 
   const featured = featuredPapers.slice(0, 1);
   const mainStories = papers.slice(0, 6);

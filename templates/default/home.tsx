@@ -27,8 +27,8 @@ export function DefaultHome({ site, papers, featuredPapers, categories, query, t
 
   // Build hierarchical menu
   const categoryHierarchy = buildHierarchicalMenu(
-    papers.map((p) => ({ category: p.category, parentCategory: p.parentCategory })),
-    site.industry || "technology"
+    papers.map((p) => ({ category: p.category, parentCategory: p.category })),
+    "technology"
   );
 
   return (

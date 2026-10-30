@@ -629,7 +629,7 @@ export async function generateDraftsForSource(source: SourceDocumentRecord, site
         throw new Error(`HTML content size invalid for "${site.name}": ${cleanHtml.length} bytes (expected 200-500000)`);
       }
 
-      const metadata = extractMetadataFromHtml(cleanHtml, source.title, site.industry || "technology");
+      const metadata = extractMetadataFromHtml(cleanHtml, source.title, technology);
 
       // Validate category won't cause menu overflow
       const existingPapers = await listWhitepapers({ siteId: site.id });
@@ -663,7 +663,7 @@ export async function generateDraftsForSource(source: SourceDocumentRecord, site
           abstract: metadata.abstract,
           takeaways: [],
           tags: ["blog"],
-          industry: site.industry || "",
+          industry: "",
           targetAudience: "",
           geographicTarget: "",
           readingMinutes: Math.ceil(plainTextLength(cleanHtml) / 200),
